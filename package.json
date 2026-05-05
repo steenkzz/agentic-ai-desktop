@@ -1,0 +1,47 @@
+{
+  "name": "agentic-ai-desktop",
+  "version": "1.0.0",
+  "description": "Agentic AI — Desktop Demo",
+  "main": "main.js",
+  "scripts": {
+    "start":        "electron .",
+    "build:win":    "electron-builder --win",
+    "build:mac":    "electron-builder --mac",
+    "build:all":    "electron-builder --win --mac"
+  },
+  "build": {
+    "appId":          "nl.infogroen.agentic-ai-desktop",
+    "productName":    "Agentic AI",
+    "copyright":      "© 2026 Infogroen",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "renderer/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target":       "nsis",
+      "icon":         "assets/icon.ico"
+    },
+    "mac": {
+      "target":       "dmg",
+      "icon":         "assets/icon.icns",
+      "category":     "public.app-category.business"
+    },
+    "nsis": {
+      "oneClick":           false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "installerHeaderIcon": "assets/icon.ico"
+    },
+    "dmg": {
+      "title":        "Agentic AI ${version}"
+    }
+  },
+  "devDependencies": {
+    "electron":         "^28.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}
