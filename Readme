@@ -1,0 +1,62 @@
+# Agentic AI Desktop
+
+Desktop demo app for the Agentic AI system.
+Built with Electron — runs on Windows and Mac.
+
+---
+
+## Prerequisites
+
+- Node.js 18+
+- npm
+
+---
+
+## Run locally (development)
+
+```bash
+npm install
+npm start
+```
+
+This opens the app immediately without building an installer.
+Requires an internet connection — the app calls the Vercel API.
+
+---
+
+## Build installers
+
+### Windows (.exe installer)
+Run this on a Windows machine:
+```bash
+npm install
+npm run build:win
+```
+Output: `dist/Agentic AI Setup 1.0.0.exe`
+
+### Mac (.dmg installer)
+Run this on a Mac:
+```bash
+npm install
+npm run build:mac
+```
+Output: `dist/Agentic AI-1.0.0.dmg`
+
+---
+
+## Important
+
+- The app requires an active internet connection
+- It calls `https://ai-support-sprint.vercel.app/api/demo`
+- If the Vercel project URL changes, update `API_URL` in `renderer/index.html`
+
+---
+
+## Icons
+
+Before building installers, add proper icon files:
+- `assets/icon.ico` — Windows (256x256 .ico file)
+- `assets/icon.icns` — Mac (.icns file)
+- `assets/icon.png` — 512x512 PNG (used as fallback)
+
+You can generate these from a single PNG at https://cloudconvert.com
