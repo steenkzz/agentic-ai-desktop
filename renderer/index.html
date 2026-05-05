@@ -40,7 +40,7 @@
     height: 100vh;
     display: grid;
     grid-template-columns: 300px 1fr;
-    grid-template-rows: 56px 1fr;
+    grid-template-rows: 56px auto 1fr;
     overflow: hidden;
   }
 
@@ -216,7 +216,29 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-  /* ── Sources panel ── */
+  /* ── Update banner ── */
+  .update-banner {
+    display: none;
+    align-items: center; gap: 12px;
+    padding: 8px 20px;
+    background: var(--blue-dim);
+    border-bottom: 1px solid var(--blue);
+    font-size: 13px; color: var(--text);
+    grid-column: 1 / -1;
+  }
+  .update-banner.visible { display: flex; }
+  .update-banner .update-msg { flex: 1; }
+  .update-banner .update-msg strong { color: var(--blue); }
+  .update-btn {
+    padding: 5px 14px; border-radius: 6px; border: none;
+    font-size: 12px; font-family: var(--sans); cursor: pointer;
+    font-weight: 500; transition: opacity .15s;
+  }
+  .update-btn:hover { opacity: .85; }
+  .update-btn.primary { background: var(--blue); color: white; }
+  .update-btn.secondary { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
+  .progress-bar-wrap { flex: 1; background: var(--surface2); border-radius: 4px; height: 6px; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--blue); border-radius: 4px; transition: width .3s; width: 0%; }
   .sources-panel {
     margin-top: 10px; border: 1px solid var(--border);
     border-radius: 8px; overflow: hidden; font-size: 12px;
@@ -252,6 +274,13 @@
     <span id="statusText">Connecting...</span>
   </div>
 </header>
+
+<!-- Update notification banner — hidden until an update is found -->
+<div class="update-banner" id="updateBanner">
+  <span class="update-msg" id="updateMsg">A new version is available.</span>
+  <button class="update-btn primary"   id="updateActionBtn" onclick="handleUpdateAction()">Download</button>
+  <button class="update-btn secondary" onclick="document.getElementById('updateBanner').classList.remove('visible')">Later</button>
+</div>
 
 <aside>
   <div>
@@ -464,6 +493,58 @@
     document.getElementById('stat-resolved').textContent = stats.resolved;
     document.getElementById('stat-tickets').textContent  = stats.tickets;
     document.getElementById('stat-rate').textContent     = stats.total ? Math.round((stats.resolved/stats.total)*100)+'%' : '—';
+  }
+
+  // ── Auto-updater ──────────────────────────────────────────────────────────
+  let updateReady = false;
+
+  function showBanner(msg, actionLabel) {
+    document.getElementById('updateMsg').innerHTML       = msg;
+    document.getElementById('updateActionBtn').textContent = actionLabel;
+    document.getElementById('updateBanner').classList.add('visible');
+  }
+
+  function handleUpdateAction() {
+    if (updateReady) {
+      window.updater?.installUpdate();
+    } else {
+      document.getElementById('updateActionBtn').textContent = 'Downloading...';
+      document.getElementById('updateActionBtn').disabled    = true;
+      // Replace button with progress bar
+      const btn = document.getElementById('updateActionBtn');
+      const bar = document.createElement('div');
+      bar.className = 'progress-bar-wrap';
+      bar.innerHTML = '<div class="progress-bar" id="progressBar"></div>';
+      btn.replaceWith(bar);
+      window.updater?.downloadUpdate();
+    }
+  }
+
+  if (window.updater) {
+    window.updater.onUpdateAvailable((info) => {
+      showBanner(`✨ <strong>Version ${info.version}</strong> is available.`, 'Download');
+    });
+    window.updater.onProgress((data) => {
+      const bar = document.getElementById('progressBar');
+      if (bar) bar.style.width = data.percent + '%';
+    });
+    window.updater.onDownloaded(() => {
+      updateReady = true;
+      const wrap = document.querySelector('.progress-bar-wrap');
+      if (wrap) {
+        const btn = document.createElement('button');
+        btn.className   = 'update-btn primary';
+        btn.id          = 'updateActionBtn';
+        btn.textContent = 'Restart & Install';
+        btn.onclick     = handleUpdateAction;
+        wrap.replaceWith(btn);
+      }
+      document.getElementById('updateMsg').innerHTML = '✅ Update downloaded. Restart to install.';
+    });
+    window.updater.onError((msg) => {
+      document.getElementById('updateBanner').classList.remove('visible');
+      console.warn('[Updater] Error:', msg);
+    });
   }
 </script>
 </body>
