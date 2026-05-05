@@ -5,40 +5,39 @@
   "main": "main.js",
   "scripts": {
     "start":        "electron .",
-    "build:win":    "electron-builder --win",
-    "build:mac":    "electron-builder --mac",
-    "build:all":    "electron-builder --win --mac"
+    "build:win":    "electron-builder --win --publish never",
+    "build:mac":    "electron-builder --mac --publish never",
+    "release:win":  "electron-builder --win --publish always",
+    "release:mac":  "electron-builder --mac --publish always"
   },
   "build": {
-    "appId":          "nl.infogroen.agentic-ai-desktop",
-    "productName":    "Agentic AI",
-    "copyright":      "© 2026 Infogroen",
-    "directories": {
-      "output": "dist"
+    "appId":       "nl.infogroen.agentic-ai-desktop",
+    "productName": "Agentic AI",
+    "copyright":   "© 2026 Infogroen",
+    "publish": {
+      "provider": "github",
+      "owner":    "steenkzz",
+      "repo":     "agentic-ai-desktop"
     },
-    "files": [
-      "main.js",
-      "renderer/**/*",
-      "assets/**/*"
-    ],
+    "directories": { "output": "dist" },
+    "files": ["main.js", "renderer/**/*", "assets/**/*"],
     "win": {
-      "target":       "nsis",
-      "icon":         "assets/icon.ico"
+      "target": "nsis",
+      "icon":   "assets/icon.ico"
     },
     "mac": {
-      "target":       "dmg",
-      "icon":         "assets/icon.icns",
-      "category":     "public.app-category.business"
+      "target":   "dmg",
+      "icon":     "assets/icon.icns",
+      "category": "public.app-category.business"
     },
     "nsis": {
-      "oneClick":           false,
+      "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "installerHeaderIcon": "assets/icon.ico"
-    },
-    "dmg": {
-      "title":        "Agentic AI ${version}"
+      "createDesktopShortcut": true
     }
+  },
+  "dependencies": {
+    "electron-updater": "^6.1.7"
   },
   "devDependencies": {
     "electron":         "^28.0.0",
