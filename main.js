@@ -51,14 +51,18 @@ function createWindow() {
     icon: path.join(__dirname, 'assets', process.platform === 'win32' ? 'icon.ico' : 'icon.icns'),
   });
 
-  mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'));
+  mainWindow.loadURL('https://ai-support-sprint.vercel.app');
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };
   });
   mainWindow.webContents.on('will-navigate', (event, url) => {
-    if (!url.startsWith('file://')) { event.preventDefault(); shell.openExternal(url); }
+    const isVercel = url.startsWith('https://ai-support-sprint.vercel.app');
+    if (!isVercel) {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
   });
   mainWindow.on('closed', () => { mainWindow = null; });
 }
